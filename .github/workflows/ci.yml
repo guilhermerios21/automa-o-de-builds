@@ -34,7 +34,7 @@ jobs:
     name: Build da imagem Docker
     runs-on: ubuntu-latest
     needs: test
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && secrets.CI_REGISTRY != '' && secrets.CI_REGISTRY_USER != '' && secrets.CI_REGISTRY_PASSWORD != '' && secrets.CI_REGISTRY_IMAGE != ''
     env:
       CI_REGISTRY_IMAGE: ${{ secrets.CI_REGISTRY_IMAGE }}
       CI_COMMIT_SHA: ${{ github.sha }}
