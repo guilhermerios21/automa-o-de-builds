@@ -50,9 +50,13 @@ jobs:
         if: env.CI_REGISTRY != '' && env.CI_REGISTRY_USER != '' && env.CI_REGISTRY_PASSWORD != '' && env.CI_REGISTRY_IMAGE != ''
         run: echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
 
+      - name: Pull da imagem latest
+        if: env.CI_REGISTRY_IMAGE != ''
+        run: docker pull "$CI_REGISTRY_IMAGE:latest" || true
+
       - name: Build da imagem
         if: env.CI_REGISTRY_IMAGE != ''
-        run: docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" -t "$CI_REGISTRY_IMAGE:latest" .
+        run: docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from "$CI_REGISTRY_IMAGE:latest" --tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" --tag "$CI_REGISTRY_IMAGE:latest" .
 
       - name: Push da imagem com SHA
         if: env.CI_REGISTRY_IMAGE != ''
